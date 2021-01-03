@@ -1,0 +1,1 @@
+export { gameOverSceneInit } from './gameOverScene'

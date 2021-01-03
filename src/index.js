@@ -9,52 +9,61 @@ import './assets/SYM6.png'
 import './assets/BG.png'
 import './assets/BTN_Spin.png'
 import './assets/BTN_Spin_d.png'
+import app from './app'
+import { loadingSceneInit } from './js/scens/LoadingScene'
+import { winSceneInit } from './js/scens/WinScene'
+import { buttonNextPlayInit } from './js/scens/WinScene'
+import { gameSceneInit } from './js/scens/GameScene'
+import { buttonPlayInit } from './js/scens/GameScene'
+import { creditsPanel } from './js/scens/GameScene'
+import { gameOverSceneInit } from './js/scens/GameOverScene'
+import { generateRandomInt } from './Utils/genrateRandomInt'
+import { checkPlayResult } from './js/Mathematics/checkPlayResult'
 
-
-
-
-console.log(PIXI)
-
-const app = new PIXI.Application({
-    transparent: false,
-    resolution: window.devicePixelRatio
-});
-app.renderer.backgroundColor = 0x061639;
-app.renderer.autoResize = true;
-app.renderer.view.style.position = "absolute";
-app.renderer.view.style.display = "block";
-app.renderer.autoResize = true;
-app.renderer.resize(window.innerWidth, window.innerHeight);
-
+console.log(PIXI);
 document.body.appendChild(app.view);
 
 const loaders = new PIXI.Loader();
-
 loaders
     .add('SYM1', './assets/SYM1.png')
-    .add('SYM3', './assets/SYM2.png')
-    .add('SYM4', './assets/SYM3.png')
-    .add('SYM5', './assets/SYM4.png')
-    .add('SYM6', './assets/SYM5.png')
-    .add('SYM7', './assets/SYM6.png')
+    .add('SYM2', './assets/SYM2.png')
+    .add('SYM3', './assets/SYM3.png')
+    .add('SYM4', './assets/SYM4.png')
+    .add('SYM5', './assets/SYM5.png')
+    .add('SYM6', './assets/SYM6.png')
     .add('background', './assets/BG.png')
     .add('button', './assets/BTN_Spin.png')
     .add('button-disable', './assets/BTN_Spin_d.png')
     .load(setup);
 
-const INITIAL_TIME_PLAY = 300;
-let state, gameScene, buttonPlay, buttonPlayTexture, loadingScene, winScene;
-let timeLoadingGame = 200;
+const ROW_WIDTH = 170;
+const SYMBOL_SIZE = 150;
+const INITIAL_TIME_PLAY = 50;
+const WIN_PRIZE = 10
+const SPINS_PRICE = 5;
+
+let credits = 1000;
+let winSalary = 0;
+
+let state, gameScene, buttonPlay, buttonPlayTexture, loadingScene, winScene, gameOverScene, creditsPanels;
+let timeLoadingGame = 50;
 let isLoadingGame = true;
-let timePlay = 300;
+let timePlay;
 let targetClick = false;
+let gameItemsArr = [];
+let gameAreaResults = [];
+let gameAreaContainer;
+let gameCombo = {
+    a: [],
+    b: [],
+    c: [],
+};
 
 
 
 function setup() {
     // id = loaders.resources['./assets/atlas.json'].textures;    ?dont worck
     // const resources = new Promise((resolve, reject) => loader.load((loader, resources) => resolve(resources)))
-
 
     const slotTextures = [
         PIXI.Texture.from('SYM1'),
@@ -64,144 +73,162 @@ function setup() {
         PIXI.Texture.from('SYM5'),
         PIXI.Texture.from('SYM6'),
     ];
+    buttonPlayTexture = [
+        PIXI.Texture.from('button'),
+        PIXI.Texture.from('button-disable'),
+    ];
+
+    timePlay = INITIAL_TIME_PLAY;
+
+    //Loading Scene initialize
+    loadingScene = loadingSceneInit();
+    app.stage.addChild(loadingScene);
+
+    //Game Scene initialize
+    gameScene = gameSceneInit();
+    buttonPlay = buttonPlayInit(buttonPlayTexture);
+    buttonPlay.on('pointerdown', handlerClickPlay);
+    gameScene.addChild(buttonPlay);
+    creditsPanels = creditsPanel(credits, winSalary)
+    creditsPanels.x = app.screen.width - 200;
+    creditsPanels.y = app.screen.height - 200;
+
+    gameScene.addChild(creditsPanels);
+    app.stage.addChild(gameScene);
+
+    //Win Scene initialize
+    winScene = winSceneInit();
+    const buttonNextPlay = buttonNextPlayInit();
+    buttonNextPlay.on('pointerdown', handlerClickNextPlay);
+    winScene.addChild(buttonNextPlay);
+    app.stage.addChild(winScene);
+
+    //Game Over scene init
+    gameOverScene = gameOverSceneInit();
+    app.stage.addChild(gameOverScene);
 
 
-    loadingSceneInit()
-    gameSceneInit()
-    winSceneInit()
+
+    //all game item
+    gameItemsArr = [
+        { itemId: 0, itemSkin: slotTextures[0], itemSymbol: null },
+        { itemId: 1, itemSkin: slotTextures[1], itemSymbol: null },
+        { itemId: 2, itemSkin: slotTextures[2], itemSymbol: null },
+        { itemId: 3, itemSkin: slotTextures[3], itemSymbol: null },
+        { itemId: 4, itemSkin: slotTextures[4], itemSymbol: null },
+        { itemId: 5, itemSkin: slotTextures[5], itemSymbol: null },
+    ]
+
+    //init  game area
+    gameAreaContainer = createRandomGameArea()
+    gameScene.addChild(gameAreaContainer);
 
     //start view game scene property
     loadingScene.visible = true;
     gameScene.visible = false;
     winScene.visible = false;
+    gameOverScene.visible = false;
 
     state = play;
     app.ticker.add(delta => gameLoop(delta));
 }
 
-//loading Scene initialize
-const loadingSceneInit = () => {
-    loadingScene = new PIXI.Container()
-    let SpinnerLoading = new PIXI.Text("...Loading!", {
-        fontFamily: "Arial",
-        fontSize: 24,
-        fill: "white",
-        stroke: '#ff3300',
-        strokeThickness: 4,
-        dropShadow: true,
-        dropShadowColor: "#000000",
-        dropShadowBlur: 4,
-        dropShadowAngle: Math.PI / 6,
-        dropShadowDistance: 6,
-    });
-    SpinnerLoading.anchor.set(0.5);
-    SpinnerLoading.position.set(app.screen.width / 2, app.screen.height / 2);
-    loadingScene.addChild(SpinnerLoading)
 
-    app.stage.addChild(loadingScene)
+const createRandomGameArea = () => {
+    const gameAreaContainer = new PIXI.Container(); // общый контейнер поля
+    gameCombo = { // очищаем
+        a: [],
+        b: [],
+        c: [],
+    }
+    gameAreaResults = [];// очищаем
 
+    for (let i = 0; i < 3; i += 1) {
+        const rowContainer = new PIXI.Container();   // контейнер столбца
+        rowContainer.x = i * ROW_WIDTH;
+        gameAreaContainer.addChild(rowContainer);
+
+        const row = {
+            symbols: [],    //масив всех символов в столбце         
+        };
+
+        // Build the symbols
+        for (let j = 0; j < 3; j += 1) {
+            let randomItemId = generateRandomInt(0, 5);
+            const symbol = new PIXI.Sprite.from(gameItemsArr[randomItemId].itemSkin);
+            symbol.y = j * SYMBOL_SIZE;
+            symbol.scale.x = symbol.scale.y = Math.min(SYMBOL_SIZE / symbol.width, SYMBOL_SIZE / symbol.height);
+            symbol.x = Math.round((SYMBOL_SIZE - symbol.width) / 2);
+            gameItemsArr[randomItemId].itemSymbol = symbol;
+            row.symbols.push(gameItemsArr[randomItemId]); // заносим в масив столбца
+            rowContainer.addChild(symbol);
+            //разносим итемы в обект полей для проверки комбинаций
+            switch (j) {
+                case 0:
+                    gameCombo.a.push(gameItemsArr[randomItemId]);
+                    break;
+                case 1:
+                    gameCombo.b.push(gameItemsArr[randomItemId]);
+                    break;
+                case 2:
+                    gameCombo.c.push(gameItemsArr[randomItemId]);
+                    break;
+                default: console.log("error value");
+
+            }
+        }
+        gameAreaResults.push(row);
+    }
+
+
+
+    gameAreaContainer.width = app.screen.width / 2;
+    gameAreaContainer.y = app.screen.height / 2;
+    gameAreaContainer.x = app.screen.width / 2;
+    gameAreaContainer.pivot.set(gameAreaContainer.width / 2, gameAreaContainer.height / 2);
+    return gameAreaContainer;
 }
 
-//Win Scene initialize
-const winSceneInit = () => {
-    winScene = new PIXI.Container()
 
-    const Box = new PIXI.Graphics();
-    Box.lineStyle(2, 0xFF00FF, 1);
-    Box.beginFill(0x650A5A, 0.45);
-    Box.drawRoundedRect(app.screen.width / 2, app.screen.height / 2, app.screen.width - app.screen.width / 3, app.screen.height - app.screen.height / 3, 16);
-    Box.pivot.set(Box.width / 2, Box.height / 2)
-    Box.endFill();
 
-    winScene.addChild(Box)
-
-    const winText = new PIXI.Text("YOU WIN!", {
-        fontFamily: "Arial",
-        fontSize: 36,
-        fill: "yellow",
-        stroke: 'black',
-        strokeThickness: 4,
-        dropShadow: true,
-        dropShadowColor: "#ffffff",
-        dropShadowBlur: 4,
-        dropShadowAngle: Math.PI / 6,
-        dropShadowDistance: 6,
-    });
-    winText.anchor.set(0.5);
-    winText.position.set(app.screen.width / 2, app.screen.height / 2);
-    winScene.addChild(winText)
-
-    const buttonNextPlay = new PIXI.Graphics();
-    buttonNextPlay.beginFill(0x061639, 0.1);
-    buttonNextPlay.drawRect(app.screen.width / 2, app.screen.height / 2, app.screen.width, app.screen.height);
-    buttonNextPlay.pivot.set(buttonNextPlay.width / 2, buttonNextPlay.height / 2)
-    buttonNextPlay.endFill();
-    buttonNextPlay.interactive = true;
-    buttonNextPlay.buttonMode = true;
-    buttonNextPlay.on('pointerdown', handlerClickNextPlay)
-    winScene.addChild(buttonNextPlay)
-
-    app.stage.addChild(winScene)
-}
-
+//NextPlay button Win Scene handler
 const handlerClickNextPlay = () => {
     winScene.visible = false;
 }
 
-//Game Scene initialize
-const gameSceneInit = () => {
-    //Game Scene
-    gameScene = new PIXI.Container()
-    app.stage.addChild(gameScene)
-    // фон
-    let bg = new PIXI.Sprite.from("background");
-    bg.position.set(app.screen.width / 2, app.screen.height / 2);
-    bg.anchor.set(0.5);
-    gameScene.addChild(bg)
-    initControl()
-}
-
-//Game Scene Control initialize
-const initControl = () => {
-    buttonPlayTexture = [
-        PIXI.Texture.from('button'),
-        PIXI.Texture.from('button-disable'),
-    ]
-    buttonPlay = new PIXI.Sprite(buttonPlayTexture[0]);
-    buttonPlay.position.set(app.screen.width - 250, app.screen.height / 2);
-    buttonPlay.anchor.set(0.5);
-    buttonPlay.interactive = true;
-    buttonPlay.buttonMode = true;
-    buttonPlay.on('pointerdown', handlerClickPlay)
-    gameScene.addChild(buttonPlay)
-}
-
-//game event click control
+//Game Scene button Play handler
 const handlerClickPlay = () => {
     if (!targetClick) {
         targetClick = true;
         timePlay = INITIAL_TIME_PLAY;
-        buttonPlay.texture = buttonPlayTexture[1]
+        buttonPlay.texture = buttonPlayTexture[1];
+        credits -= SPINS_PRICE;
+        creditsPanels.children[1].text = `MONEY: ${credits}$`;
     }
 }
 
-//game event preloading
+//game event preloading event
 const eventPreloadingGame = () => {
     if (isLoadingGame) {
         timeLoadingGame -= 1;
     } else {
-        return
+        return;
     }
 
     if (timeLoadingGame == 0) {
-        isLoadingGame = false
+        isLoadingGame = false;
         loadingScene.visible = false;
         gameScene.visible = true;
-        return
+        return;
     }
 
 }
+//Game Over event
+const eventViewGameOver = () => {
+    gameOverScene.visible = true;
+}
 
+//Game Win event
 const eventViewGameWin = () => {
     winScene.visible = true;
 }
@@ -215,11 +242,38 @@ function play() {
 
     if (targetClick) {
         timePlay -= 1;
+
+        // Play Animation
         console.log(timePlay)
         if (timePlay == 0) {
             targetClick = false;
-            buttonPlay.texture = buttonPlayTexture[0]
-            eventViewGameWin()
+            buttonPlay.texture = buttonPlayTexture[0];
+            //render new game area result
+            gameAreaResults = [];
+            gameScene.removeChild(gameAreaContainer);
+            gameAreaContainer = createRandomGameArea();
+            gameScene.addChild(gameAreaContainer);
+
+            const roundResult = checkPlayResult(gameCombo);
+            console.log(roundResult)
+            // подсветить линию  <===================this
+            if (roundResult.win) {
+                eventViewGameWin();
+                credits += WIN_PRIZE;
+                winSalary += WIN_PRIZE
+                creditsPanels.children[1].text = `MONEY: ${credits}$`;
+                creditsPanels.children[2].text = `WIN: ${winSalary}$`;
+                winScene.children[2].text = `${WIN_PRIZE}$`;
+                return
+            }
+            if (roundResult.loss) {
+                eventViewGameOver();
+                credits = 0
+                creditsPanels.children[1].text = `MONEY: ${credits}$`;
+                creditsPanels.children[2].text = `WIN: ${winSalary}$`;
+                return
+            }
+
         }
     }
 }

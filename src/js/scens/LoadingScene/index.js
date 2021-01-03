@@ -1,0 +1,1 @@
+export { loadingSceneInit } from './loadingScene'

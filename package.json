@@ -50,6 +50,6 @@
   "dependencies": {
     "@csstools/normalize.css": "^11.0.1",
     "core-js": "^3.6.4",
-    "pixi.js": "^5.3.7"
+    "pixi.js": "^5.1.6"
   }
 }
