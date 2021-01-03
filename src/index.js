@@ -17,8 +17,9 @@ import { gameSceneInit } from './js/scens/GameScene'
 import { buttonPlayInit } from './js/scens/GameScene'
 import { creditsPanel } from './js/scens/GameScene'
 import { gameOverSceneInit } from './js/scens/GameOverScene'
-import { generateRandomInt } from './Utils/genrateRandomInt'
-import { checkPlayResult } from './js/Mathematics/checkPlayResult'
+import { generateRandomInt } from './js/logics/generateRandomInt'
+import { checkPlayResult } from './js/logics/checkPlayResult'
+import { buttonNewGameInit } from './js/scens/GameOverScene'
 
 console.log(PIXI);
 document.body.appendChild(app.view);
@@ -39,6 +40,7 @@ loaders
 const ROW_WIDTH = 170;
 const SYMBOL_SIZE = 150;
 const INITIAL_TIME_PLAY = 50;
+const INITIAL_TIME_WIN = 50;
 const WIN_PRIZE = 10
 const SPINS_PRICE = 5;
 
@@ -50,6 +52,8 @@ let timeLoadingGame = 50;
 let isLoadingGame = true;
 let timePlay;
 let targetClick = false;
+let targetWin = false;
+let timeWinView;
 let gameItemsArr = [];
 let gameAreaResults = [];
 let gameAreaContainer;
@@ -58,8 +62,6 @@ let gameCombo = {
     b: [],
     c: [],
 };
-
-
 
 function setup() {
     // id = loaders.resources['./assets/atlas.json'].textures;    ?dont worck
@@ -79,7 +81,7 @@ function setup() {
     ];
 
     timePlay = INITIAL_TIME_PLAY;
-
+    timeWinView = INITIAL_TIME_WIN;
     //Loading Scene initialize
     loadingScene = loadingSceneInit();
     app.stage.addChild(loadingScene);
@@ -105,6 +107,9 @@ function setup() {
 
     //Game Over scene init
     gameOverScene = gameOverSceneInit();
+    const buttonNewGame = buttonNewGameInit();
+    buttonNewGame.on('pointerdown', handlerClickNewGame);
+    gameOverScene.addChild(buttonNewGame);
     app.stage.addChild(gameOverScene);
 
 
@@ -195,6 +200,12 @@ const createRandomGameArea = () => {
 const handlerClickNextPlay = () => {
     winScene.visible = false;
 }
+//New Game button   handler
+const handlerClickNewGame = () => {
+    gameOverScene.visible = false;
+    credits = 1000;
+    winSalary = 0;
+}
 
 //Game Scene button Play handler
 const handlerClickPlay = () => {
@@ -255,6 +266,8 @@ function play() {
             gameScene.addChild(gameAreaContainer);
 
             const roundResult = checkPlayResult(gameCombo);
+
+            // roundResult.resultLineItem[1]
             console.log(roundResult)
             // подсветить линию  <===================this
             if (roundResult.win) {
@@ -264,6 +277,7 @@ function play() {
                 creditsPanels.children[1].text = `MONEY: ${credits}$`;
                 creditsPanels.children[2].text = `WIN: ${winSalary}$`;
                 winScene.children[2].text = `${WIN_PRIZE}$`;
+                targetWin = true;
                 return
             }
             if (roundResult.loss) {
@@ -274,6 +288,16 @@ function play() {
                 return
             }
 
+        }
+    }
+
+    if (targetWin) {
+        timeWinView -= 1;
+        console.log(timeWinView)
+        if (timeWinView == 0) {
+            targetWin = false;
+            winScene.visible = false;
+            timeWinView = INITIAL_TIME_WIN;
         }
     }
 }
