@@ -2,7 +2,7 @@
 export const checkPlayResult = (gameCombo) => {
     let win = false
     let loss = false
-    let resultLineItem;
+    let resultLineItem = [];
     const wildSymbolId = 0;
 
     const checkALine = () => {
@@ -19,17 +19,17 @@ export const checkPlayResult = (gameCombo) => {
             if (resultCheckArbitrary.length === 3 && checkSymbol.itemId === wildSymbolId) {
                 console.log('You Loss')
                 loss = true;
-                resultLineItem = gameCombo.a
+                resultLineItem = [...gameCombo.a]
                 return
             }
             if (resultCheckArbitrary.length > 1 && resultCheckWild) {
                 win = true;
-                resultLineItem = gameCombo.a
+                resultLineItem = [...gameCombo.a]
                 return
             }
             if (resultCheckArbitrary.length === 3) {
                 win = true;
-                resultLineItem = gameCombo.a
+                resultLineItem = [...gameCombo.a]
                 return
             }
         }
@@ -46,17 +46,17 @@ export const checkPlayResult = (gameCombo) => {
             if (resultCheckArbitrary.length === 3 && checkSymbol.itemId === wildSymbolId) {
                 console.log('You Loss')
                 loss = true;
-                resultLineItem = gameCombo.b
+                resultLineItem = [...gameCombo.b]
                 return
             }
             if (resultCheckArbitrary.length > 1 && resultCheckWild) {
                 win = true;
-                resultLineItem = gameCombo.b
+                resultLineItem = [...gameCombo.b]
                 return
             }
             if (resultCheckArbitrary.length === 3) {
                 win = true;
-                resultLineItem = gameCombo.b
+                resultLineItem = [...gameCombo.b]
                 return
             }
         }
@@ -73,17 +73,17 @@ export const checkPlayResult = (gameCombo) => {
             if (resultCheckArbitrary.length === 3 && checkSymbol.itemId === wildSymbolId) {
                 console.log('You Loss')
                 loss = true;
-                resultLineItem = gameCombo.c
+                resultLineItem = [...gameCombo.c]
                 return
             }
             if (resultCheckArbitrary.length > 1 && resultCheckWild) {
                 win = true;
-                resultLineItem = gameCombo.c
+                resultLineItem = [...gameCombo.c]
                 return
             }
             if (resultCheckArbitrary.length === 3) {
                 win = true;
-                resultLineItem = gameCombo.c
+                resultLineItem = [...gameCombo.c]
                 return
             }
         }

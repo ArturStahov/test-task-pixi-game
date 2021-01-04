@@ -2,7 +2,7 @@
 
 "Bet_Line.png":
 {
-	"frame": {"x":0,"y":0,"w":770,"h":16},
+	"frame": {"x":1,"y":1,"w":770,"h":16},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":770,"h":16},
@@ -10,7 +10,7 @@
 },
 "BG.png":
 {
-	"frame": {"x":0,"y":16,"w":960,"h":536},
+	"frame": {"x":1,"y":19,"w":960,"h":536},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":960,"h":536},
@@ -18,7 +18,7 @@
 },
 "BTN_Spin.png":
 {
-	"frame": {"x":0,"y":552,"w":98,"h":98},
+	"frame": {"x":1,"y":557,"w":98,"h":98},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":98,"h":98},
@@ -26,7 +26,7 @@
 },
 "BTN_Spin_d.png":
 {
-	"frame": {"x":98,"y":552,"w":98,"h":98},
+	"frame": {"x":101,"y":557,"w":98,"h":98},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":98,"h":98},
@@ -34,7 +34,7 @@
 },
 "SYM1.png":
 {
-	"frame": {"x":196,"y":552,"w":235,"h":155},
+	"frame": {"x":201,"y":557,"w":235,"h":155},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":235,"h":155},
@@ -42,7 +42,7 @@
 },
 "SYM2.png":
 {
-	"frame": {"x":431,"y":552,"w":235,"h":155},
+	"frame": {"x":438,"y":557,"w":235,"h":155},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":235,"h":155},
@@ -50,7 +50,7 @@
 },
 "SYM3.png":
 {
-	"frame": {"x":666,"y":552,"w":235,"h":155},
+	"frame": {"x":675,"y":557,"w":235,"h":155},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":235,"h":155},
@@ -58,7 +58,7 @@
 },
 "SYM4.png":
 {
-	"frame": {"x":0,"y":707,"w":235,"h":155},
+	"frame": {"x":1,"y":714,"w":235,"h":155},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":235,"h":155},
@@ -66,7 +66,7 @@
 },
 "SYM5.png":
 {
-	"frame": {"x":235,"y":707,"w":235,"h":155},
+	"frame": {"x":238,"y":714,"w":235,"h":155},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":235,"h":155},
@@ -74,7 +74,7 @@
 },
 "SYM6.png":
 {
-	"frame": {"x":470,"y":707,"w":235,"h":155},
+	"frame": {"x":475,"y":714,"w":235,"h":155},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":235,"h":155},
@@ -86,10 +86,10 @@
 "meta": {
 	"app": "https://www.codeandweb.com/texturepacker",
 	"version": "1.0",
-	"image": "sprite-atlas.png",
+	"image": "assets.png",
 	"format": "RGBA8888",
-	"size": {"w":960,"h":862},
+	"size": {"w":962,"h":870},
 	"scale": "1",
-	"smartupdate": "$TexturePacker:SmartUpdate:010b549c7017938284032a51a5c179b8:26fee3c088b671e971c379fab0f8a972:30c23a1e8c5fe8edf0d3951e4bfdce00$"
+	"smartupdate": "$TexturePacker:SmartUpdate:6793cc59a931e08fd58a5eb76da22f4b:26fee3c088b671e971c379fab0f8a972:a759b6bbc8381ac9c472b28f589ad0d6$"
 }
 }

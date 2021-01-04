@@ -1,7 +1,12 @@
 import * as PIXI from 'pixi.js'
+
+function registerPixiInspector() {
+    window.__PIXI_INSPECTOR_GLOBAL_HOOK__ && window.__PIXI_INSPECTOR_GLOBAL_HOOK__.register({ PIXI: PIXI });
+}
+registerPixiInspector()
 const app = new PIXI.Application({
     transparent: false,
-    resolution: window.devicePixelRatio
+    resolution: window.devicePixelRatio,
 });
 app.renderer.backgroundColor = 0x061639;
 app.renderer.view.style.position = "absolute";
