@@ -23,10 +23,11 @@ import { generateRandomInt } from './js/logics/generateRandomInt'
 import { checkPlayResult } from './js/logics/checkPlayResult'
 import { buttonNewGameInit } from './js/scens/GameOverScene'
 
-
+import gsap from 'gsap'
 
 console.log(PIXI);
 document.body.appendChild(app.view);
+
 
 // const load = PIXI.Loader.shared
 // let id
@@ -51,10 +52,10 @@ loaders
 
 
 
-const ROW_WIDTH = 170;
+const ROW_WIDTH = 200;
 const SYMBOL_SIZE = 150;
-const INITIAL_TIME_PLAY = 50;
-const INITIAL_TIME_WIN = 50;
+const INITIAL_TIME_PLAY = 300;
+const INITIAL_TIME_WIN = 300;
 const WIN_PRIZE = 10
 const SPINS_PRICE = 5;
 
@@ -83,6 +84,8 @@ let gameCombo = {
     b: [],
     c: [],
 };
+let roundResult;
+
 
 function setup() {
 
@@ -152,6 +155,7 @@ function setup() {
     winScene.visible = false;
     gameOverScene.visible = false;
 
+
     state = play;
     app.ticker.add(delta => gameLoop(delta));
 }
@@ -180,7 +184,7 @@ const createRandomGameArea = () => {
             let randomItemId = generateRandomInt(0, gameItemsArr.length - 1);
             const symbolContainer = new PIXI.Container()
             const SelectEffect = new PIXI.Graphics();
-            SelectEffect.beginFill(0xFFD100, 0.5);
+            SelectEffect.beginFill(0xA60000, 0.5);
             SelectEffect.drawRoundedRect(0, 0, SYMBOL_SIZE, SYMBOL_SIZE - 35, 16);
             SelectEffect.pivot.set(SYMBOL_SIZE / 2, SYMBOL_SIZE / 2)
             SelectEffect.endFill();
@@ -232,11 +236,11 @@ const createRandomGameArea = () => {
         gameAreaResults.push(row);
     }
 
-    console.log(gameItemsArr)
+    console.log(gameAreaResults)
 
     gameAreaContainer.width = app.screen.width / 2;
-    gameAreaContainer.y = app.screen.height / 2;
-    gameAreaContainer.x = app.screen.width / 2;
+    gameAreaContainer.y = app.screen.height / 2 + 50;
+    gameAreaContainer.x = app.screen.width / 2 + 50;
     gameAreaContainer.pivot.set(gameAreaContainer.width / 2, gameAreaContainer.height / 2);
     return gameAreaContainer;
 }
@@ -245,7 +249,9 @@ const createRandomGameArea = () => {
 
 //NextPlay button Win Scene handler
 const handlerClickNextPlay = () => {
+    targetWin = false;
     winScene.visible = false;
+    timeWinView = INITIAL_TIME_WIN;
 }
 //New Game button   handler
 const handlerClickNewGame = () => {
@@ -265,11 +271,43 @@ const handlerClickPlay = () => {
         credits -= SPINS_PRICE;
         creditsPanels.children[1].text = `MONEY: ${credits}$`;
 
+        if (roundResult && roundResult.resultLineItem.length > 0) {
+            roundResult.resultLineItem.forEach(item => item.itemSymbol.children[0].visible = false)
+        }
 
-        gameAreaResults = [];
-        gameScene.removeChild(gameAreaContainer);
-        gameAreaContainer = createRandomGameArea();
-        gameScene.addChild(gameAreaContainer);
+        for (let i = 0; i < 3; i += 1) {
+            gameAreaResults[i].symbols[0].filters = [new PIXI.filters.BlurFilter(0.7, 0.9, 0.6)]
+            gameAreaResults[i].symbols[1].filters = [new PIXI.filters.BlurFilter(0.8, 0.9, 0.6)]
+            gameAreaResults[i].symbols[2].filters = [new PIXI.filters.BlurFilter(1, 0.9, 0.6)]
+
+            gsap.to(gameAreaResults[i].symbols[0], {
+                duration: 0.2,
+                ease: "none",
+                y: 200, //move each box 500px to right
+                modifiers: {
+                    y: gsap.utils.unitize(y => parseFloat(y) % 250) //force x value to be between 0 and 500 using modulus
+                },
+                repeat: -1
+            });
+            gsap.to(gameAreaResults[i].symbols[1], {
+                duration: 0.2,
+                ease: "none",
+                y: -75, //move each box 500px to right
+                modifiers: {
+                    y: gsap.utils.unitize(y => parseFloat(y) % 200) //force x value to be between 0 and 500 using modulus
+                },
+                repeat: -1
+            });
+            gsap.to(gameAreaResults[i].symbols[2], {
+                duration: 0.2,
+                ease: "none",
+                y: -100, //move each box 500px to right
+                modifiers: {
+                    y: gsap.utils.unitize(y => parseFloat(y) % 300) //force x value to be between 0 and 500 using modulus
+                },
+                repeat: -1
+            });
+        }
     }
 }
 
@@ -308,20 +346,20 @@ function play() {
 
     if (targetClick) {
         timePlay -= 1;
-
-        // Play Animation
+        // gameAreaResults[0].symbols[0].y += 20
+        // // Play Animation
+        // console.log(gameAreaResults[0].symbols[0])
 
         if (timePlay == 0) {
             targetClick = false;
             buttonPlay.texture = buttonPlayTexture[0];
-            //render new game area result
+            gameAreaResults = [];
+            gameScene.removeChild(gameAreaContainer);
+            gameAreaContainer = createRandomGameArea();
+            gameScene.addChild(gameAreaContainer);
+            roundResult = checkPlayResult(gameCombo);
 
-
-            const roundResult = checkPlayResult(gameCombo);
-
-
-            console.log(roundResult)
-            // подсветить линию  <===================this
+            console.log(gameAreaResults)
             if (roundResult.win) {
                 roundResult.resultLineItem.forEach(item => item.itemSymbol.children[0].visible = true)
                 eventViewGameWin();
@@ -330,11 +368,12 @@ function play() {
                 creditsPanels.children[1].text = `MONEY: ${credits}$`;
                 creditsPanels.children[2].text = `WIN: ${winSalary}$`;
                 winScene.children[2].text = `${WIN_PRIZE}$`;
-                // targetWin = true;
+                targetWin = true;
                 return
             }
             if (roundResult.loss) {
                 eventViewGameOver();
+                roundResult.resultLineItem.forEach(item => item.itemSymbol.children[0].visible = true)
                 credits = 0
                 creditsPanels.children[1].text = `MONEY: ${credits}$`;
                 creditsPanels.children[2].text = `WIN: ${winSalary}$`;

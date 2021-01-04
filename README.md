@@ -6,3 +6,4 @@ use:
 - vanilla js;
 - pixi.js
 - texturePacker
+- gsap
