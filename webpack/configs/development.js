@@ -16,6 +16,14 @@ module.exports = env => ({
         test: /\.scss$/,
         use: ['style-loader', 'css-loader', 'postcss-loader'],
       },
+      {
+        test: /\.mp3$/,
+        loader: 'file-loader',
+        query: {
+          name: 'static/media/[name].[hash:8].[ext]'
+        }
+      }
+
     ],
   },
   plugins: [

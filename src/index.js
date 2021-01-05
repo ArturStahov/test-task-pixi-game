@@ -1,4 +1,6 @@
 import * as PIXI from 'pixi.js'
+import gsap from 'gsap'
+
 import '@csstools/normalize.css'
 import './base.css'
 import './assets/SYM1.png'
@@ -10,7 +12,10 @@ import './assets/SYM6.png'
 import './assets/BG.png'
 import './assets/BTN_Spin.png'
 import './assets/BTN_Spin_d.png'
-
+import soundPlay from './assets/sound/runPlay.mp3'
+import soundsWin from './assets/sound/won.mp3'
+import soundsClick from './assets/sound/click.mp3'
+import soundFon from './assets/sound/Sound_fon.mp3'
 import app from './app'
 import { loadingSceneInit } from './js/scens/LoadingScene'
 import { winSceneInit } from './js/scens/WinScene'
@@ -23,11 +28,7 @@ import { generateRandomInt } from './js/logics/generateRandomInt'
 import { checkPlayResult } from './js/logics/checkPlayResult'
 import { buttonNewGameInit } from './js/scens/GameOverScene'
 
-import gsap from 'gsap'
-
-console.log(PIXI);
 document.body.appendChild(app.view);
-
 
 // const load = PIXI.Loader.shared
 // let id
@@ -49,8 +50,10 @@ loaders
     .add('button-disable', './assets/BTN_Spin_d.png')
     .load(setup);
 
-
-
+let soundWin = new Audio(soundsWin);
+let soundClick = new Audio(soundsClick)
+let soundsPlay = new Audio(soundPlay)
+let soundsFon = new Audio(soundFon)
 
 const ROW_WIDTH = 200;
 const SYMBOL_SIZE = 150;
@@ -59,8 +62,6 @@ const INITIAL_TIME_WIN = 300;
 const WIN_PRIZE = 10
 const SPINS_PRICE = 5;
 
-let credits = 1000;
-let winSalary = 0;
 
 let state;
 let gameScene;
@@ -73,6 +74,8 @@ let creditsPanels;
 let timePlay;
 let timeWinView;
 let gameAreaContainer;
+let credits = 1000;
+let winSalary = 0;
 let timeLoadingGame = 50;
 let isLoadingGame = true;
 let targetClick = false;
@@ -104,6 +107,7 @@ function setup() {
 
     timePlay = INITIAL_TIME_PLAY;
     timeWinView = INITIAL_TIME_WIN;
+
     //Loading Scene initialize
     loadingScene = loadingSceneInit();
     app.stage.addChild(loadingScene);
@@ -116,7 +120,6 @@ function setup() {
     creditsPanels = creditsPanel(credits, winSalary)
     creditsPanels.x = app.screen.width - 200;
     creditsPanels.y = app.screen.height - 200;
-
     gameScene.addChild(creditsPanels);
     app.stage.addChild(gameScene);
 
@@ -133,7 +136,6 @@ function setup() {
     buttonNewGame.on('pointerdown', handlerClickNewGame);
     gameOverScene.addChild(buttonNewGame);
     app.stage.addChild(gameOverScene);
-
 
     //all game item
     gameItemsArr = [
@@ -154,7 +156,6 @@ function setup() {
     gameScene.visible = false;
     winScene.visible = false;
     gameOverScene.visible = false;
-
 
     state = play;
     app.ticker.add(delta => gameLoop(delta));
@@ -184,7 +185,7 @@ const createRandomGameArea = () => {
             let randomItemId = generateRandomInt(0, gameItemsArr.length - 1);
             const symbolContainer = new PIXI.Container()
             const SelectEffect = new PIXI.Graphics();
-            SelectEffect.beginFill(0xA60000, 0.5);
+            SelectEffect.beginFill(0xFFAA00, 0.7);
             SelectEffect.drawRoundedRect(0, 0, SYMBOL_SIZE, SYMBOL_SIZE - 35, 16);
             SelectEffect.pivot.set(SYMBOL_SIZE / 2, SYMBOL_SIZE / 2)
             SelectEffect.endFill();
@@ -215,9 +216,8 @@ const createRandomGameArea = () => {
                 itemId: randomItemId,
                 itemSymbol: symbolContainer
             }
-            row.symbols.push(symbolContainer); // заносим в масив столбца для анимации
+            row.symbols.push(symbolContainer);
             rowContainer.addChild(symbolContainer);
-            //разносим итемы в обект полей для проверки комбинаций
             switch (j) {
                 case 0:
                     gameCombo.a.push(ItemObj);
@@ -236,8 +236,6 @@ const createRandomGameArea = () => {
         gameAreaResults.push(row);
     }
 
-    console.log(gameAreaResults)
-
     gameAreaContainer.width = app.screen.width / 2;
     gameAreaContainer.y = app.screen.height / 2 + 50;
     gameAreaContainer.x = app.screen.width / 2 + 50;
@@ -246,13 +244,13 @@ const createRandomGameArea = () => {
 }
 
 
-
 //NextPlay button Win Scene handler
 const handlerClickNextPlay = () => {
     targetWin = false;
     winScene.visible = false;
     timeWinView = INITIAL_TIME_WIN;
 }
+
 //New Game button   handler
 const handlerClickNewGame = () => {
     gameOverScene.visible = false;
@@ -308,6 +306,10 @@ const handlerClickPlay = () => {
                 repeat: -1
             });
         }
+        soundClick.play();
+        soundsPlay.play();
+        soundsFon.play();
+        soundsFon.loop = true;
     }
 }
 
@@ -325,7 +327,6 @@ const eventPreloadingGame = () => {
         gameScene.visible = true;
         return;
     }
-
 }
 //Game Over event
 const eventViewGameOver = () => {
@@ -346,9 +347,6 @@ function play() {
 
     if (targetClick) {
         timePlay -= 1;
-        // gameAreaResults[0].symbols[0].y += 20
-        // // Play Animation
-        // console.log(gameAreaResults[0].symbols[0])
 
         if (timePlay == 0) {
             targetClick = false;
@@ -358,7 +356,8 @@ function play() {
             gameAreaContainer = createRandomGameArea();
             gameScene.addChild(gameAreaContainer);
             roundResult = checkPlayResult(gameCombo);
-
+            soundsPlay.pause();
+            soundsPlay.currentTime = 0;
             console.log(gameAreaResults)
             if (roundResult.win) {
                 roundResult.resultLineItem.forEach(item => item.itemSymbol.children[0].visible = true)
@@ -369,6 +368,7 @@ function play() {
                 creditsPanels.children[2].text = `WIN: ${winSalary}$`;
                 winScene.children[2].text = `${WIN_PRIZE}$`;
                 targetWin = true;
+                soundWin.play();
                 return
             }
             if (roundResult.loss) {
@@ -393,7 +393,6 @@ function play() {
         }
     }
 }
-
 
 function end() {
     //All the code that should run at the end of the game
