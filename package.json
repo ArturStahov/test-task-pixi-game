@@ -19,7 +19,7 @@
   "bugs": {
     "url": "https://github.com/ArturStahov/test-task-pixi-game/issues"
   },
-  "homepage": "https://github.com/ArturStahov/test-task-pixi-game",
+  "homepage": "https://github.com/ArturStahov/test-task-pixi-game/index.html",
   "devDependencies": {
     "@babel/compat-data": "^7.9.0",
     "@babel/core": "^7.8.7",
@@ -51,6 +51,7 @@
     "@csstools/normalize.css": "^11.0.1",
     "core-js": "^3.6.4",
     "gsap": "^3.5.1",
+    "pixi-filters": "^3.2.2",
     "pixi.js": "^5.1.6"
   }
 }

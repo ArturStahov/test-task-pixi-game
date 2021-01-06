@@ -4,7 +4,6 @@ import app from '../../../app'
 //Win Scene initialize
 export const winSceneInit = () => {
     const winScene = new PIXI.Container()
-
     //background panel
     const Box = new PIXI.Graphics();
     Box.lineStyle(2, 0x061639, 1);

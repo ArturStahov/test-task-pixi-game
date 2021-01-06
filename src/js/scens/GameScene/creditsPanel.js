@@ -2,8 +2,6 @@ import * as PIXI from 'pixi.js'
 import app from '../../../app'
 
 export const creditsPanel = (credits, winSalary) => {
-
-
     const panelContainer = new PIXI.Container()
     const Box = new PIXI.Graphics();
     Box.lineStyle(2, 0xBF6730, 1);
@@ -40,7 +38,6 @@ export const creditsPanel = (credits, winSalary) => {
     winSalaryText.anchor.set(0.5);
     winSalaryText.position.set(-47, -5);
     panelContainer.addChild(winSalaryText)
-
 
     return panelContainer
 }

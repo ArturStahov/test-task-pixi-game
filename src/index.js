@@ -1,6 +1,5 @@
 import * as PIXI from 'pixi.js'
-import gsap from 'gsap'
-
+import { GlowFilter } from 'pixi-filters';
 import '@csstools/normalize.css'
 import './base.css'
 import './assets/SYM1.png'
@@ -23,9 +22,10 @@ import { buttonNextPlayInit } from './js/scens/WinScene'
 import { gameSceneInit } from './js/scens/GameScene'
 import { buttonPlayInit } from './js/scens/GameScene'
 import { creditsPanel } from './js/scens/GameScene'
+import { AnimationsGameArea } from './js/scens/GameScene'
 import { gameOverSceneInit } from './js/scens/GameOverScene'
-import { generateRandomInt } from './js/logics/generateRandomInt'
 import { checkPlayResult } from './js/logics/checkPlayResult'
+import { createRandomGameArea } from './js/logics/createRandomGameArea'
 import { buttonNewGameInit } from './js/scens/GameOverScene'
 
 document.body.appendChild(app.view);
@@ -55,12 +55,11 @@ let soundClick = new Audio(soundsClick)
 let soundsPlay = new Audio(soundPlay)
 let soundsFon = new Audio(soundFon)
 
-const ROW_WIDTH = 200;
-const SYMBOL_SIZE = 150;
 const INITIAL_TIME_PLAY = 300;
 const INITIAL_TIME_WIN = 300;
 const WIN_PRIZE = 10
 const SPINS_PRICE = 5;
+const filterGlow = new GlowFilter({ innerStrength: 3, outerStrength: 10, color: 0xffffff });
 
 
 let state;
@@ -73,7 +72,7 @@ let gameOverScene;
 let creditsPanels;
 let timePlay;
 let timeWinView;
-let gameAreaContainer;
+let gameAreaObj;
 let credits = 1000;
 let winSalary = 0;
 let timeLoadingGame = 50;
@@ -81,12 +80,7 @@ let isLoadingGame = true;
 let targetClick = false;
 let targetWin = false;
 let gameItemsArr = [];
-let gameAreaResults = []; //ссылки на итемы в столбцах на сцене
-let gameCombo = {
-    a: [],
-    b: [],
-    c: [],
-};
+let gameAreaResults = [];
 let roundResult;
 
 
@@ -100,6 +94,17 @@ function setup() {
         PIXI.Texture.from('SYM5'),
         PIXI.Texture.from('SYM6'),
     ];
+
+    //all game item
+    gameItemsArr = [
+        { itemId: 0, itemSkin: slotTextures[0] },
+        { itemId: 1, itemSkin: slotTextures[1] },
+        { itemId: 2, itemSkin: slotTextures[2] },
+        { itemId: 3, itemSkin: slotTextures[3] },
+        { itemId: 4, itemSkin: slotTextures[4] },
+        { itemId: 5, itemSkin: slotTextures[5] },
+    ]
+
     buttonPlayTexture = [
         PIXI.Texture.from('button'),
         PIXI.Texture.from('button-disable'),
@@ -137,18 +142,14 @@ function setup() {
     gameOverScene.addChild(buttonNewGame);
     app.stage.addChild(gameOverScene);
 
-    //all game item
-    gameItemsArr = [
-        { itemId: 0, itemSkin: slotTextures[0] },
-        { itemId: 1, itemSkin: slotTextures[1] },
-        { itemId: 2, itemSkin: slotTextures[2] },
-        { itemId: 3, itemSkin: slotTextures[3] },
-        { itemId: 4, itemSkin: slotTextures[4] },
-        { itemId: 5, itemSkin: slotTextures[5] },
-    ]
-
     //init  game area
-    gameAreaContainer = createRandomGameArea()
+    gameAreaObj = createRandomGameArea(gameItemsArr)
+    gameAreaResults = gameAreaObj.gameAreaResults
+    let { gameAreaContainer } = gameAreaObj
+    gameAreaContainer.width = app.screen.width / 2;
+    gameAreaContainer.y = app.screen.height / 2 + 50;
+    gameAreaContainer.x = app.screen.width / 2 + 50;
+    gameAreaContainer.pivot.set(gameAreaContainer.width / 2, gameAreaContainer.height / 2);
     gameScene.addChild(gameAreaContainer);
 
     //start view game scene property
@@ -160,89 +161,6 @@ function setup() {
     state = play;
     app.ticker.add(delta => gameLoop(delta));
 }
-
-
-const createRandomGameArea = () => {
-    const gameAreaContainer = new PIXI.Container(); // общый контейнер поля
-    gameCombo = { // очищаем
-        a: [],
-        b: [],
-        c: [],
-    }
-    gameAreaResults = [];// очищаем
-
-    for (let i = 0; i < 3; i += 1) {
-        const rowContainer = new PIXI.Container();   // контейнер столбца
-        rowContainer.x = i * ROW_WIDTH;
-        gameAreaContainer.addChild(rowContainer);
-
-        const row = {
-            symbols: [],    //масив всех символов в столбце         
-        };
-
-        // Build the symbols
-        for (let j = 0; j < 3; j += 1) {
-            let randomItemId = generateRandomInt(0, gameItemsArr.length - 1);
-            const symbolContainer = new PIXI.Container()
-            const SelectEffect = new PIXI.Graphics();
-            SelectEffect.beginFill(0xFFAA00, 0.7);
-            SelectEffect.drawRoundedRect(0, 0, SYMBOL_SIZE, SYMBOL_SIZE - 35, 16);
-            SelectEffect.pivot.set(SYMBOL_SIZE / 2, SYMBOL_SIZE / 2)
-            SelectEffect.endFill();
-            SelectEffect.filters = [new PIXI.filters.BlurFilter()]
-            symbolContainer.addChild(SelectEffect)
-            SelectEffect.y = 10;
-            SelectEffect.x = 15;
-            SelectEffect.visible = false;
-
-            const symbol = new PIXI.Sprite.from(gameItemsArr[randomItemId].itemSkin);
-            symbol.y = 0;
-            symbol.scale.x = symbol.scale.y = Math.min(SYMBOL_SIZE / symbol.width, SYMBOL_SIZE / symbol.height);
-            symbol.x = 0;
-            symbol.anchor.set(0.5);
-            symbolContainer.addChild(symbol)
-
-            symbolContainer.y = j * SYMBOL_SIZE;
-            symbolContainer.x = Math.round(SYMBOL_SIZE / 2);
-            gameItemsArr[randomItemId].itemSymbol = symbolContainer;
-
-            // const symbol = new PIXI.Sprite.from(gameItemsArr[randomItemId].itemSkin);
-            // symbol.y = j * SYMBOL_SIZE;
-            // symbol.scale.x = symbol.scale.y = Math.min(SYMBOL_SIZE / symbol.width, SYMBOL_SIZE / symbol.height);
-            // symbol.x = Math.round((SYMBOL_SIZE - symbol.width) / 2);
-            // row.symbols.push(ItemObj); // заносим в масив столбца
-            // rowContainer.addChild(symbol);
-            const ItemObj = {
-                itemId: randomItemId,
-                itemSymbol: symbolContainer
-            }
-            row.symbols.push(symbolContainer);
-            rowContainer.addChild(symbolContainer);
-            switch (j) {
-                case 0:
-                    gameCombo.a.push(ItemObj);
-                    break;
-                case 1:
-                    gameCombo.b.push(ItemObj);
-                    break;
-                case 2:
-                    gameCombo.c.push(ItemObj);
-                    break;
-                default: console.log("error value");
-
-            }
-
-        }
-        gameAreaResults.push(row);
-    }
-
-    gameAreaContainer.width = app.screen.width / 2;
-    gameAreaContainer.y = app.screen.height / 2 + 50;
-    gameAreaContainer.x = app.screen.width / 2 + 50;
-    gameAreaContainer.pivot.set(gameAreaContainer.width / 2, gameAreaContainer.height / 2);
-    return gameAreaContainer;
-}
-
 
 //NextPlay button Win Scene handler
 const handlerClickNextPlay = () => {
@@ -270,42 +188,11 @@ const handlerClickPlay = () => {
         creditsPanels.children[1].text = `MONEY: ${credits}$`;
 
         if (roundResult && roundResult.resultLineItem.length > 0) {
-            roundResult.resultLineItem.forEach(item => item.itemSymbol.children[0].visible = false)
+            roundResult.resultLineItem.forEach(item => item.itemSymbol.children[0].filters = null)
         }
 
-        for (let i = 0; i < 3; i += 1) {
-            gameAreaResults[i].symbols[0].filters = [new PIXI.filters.BlurFilter(0.7, 0.9, 0.6)]
-            gameAreaResults[i].symbols[1].filters = [new PIXI.filters.BlurFilter(0.8, 0.9, 0.6)]
-            gameAreaResults[i].symbols[2].filters = [new PIXI.filters.BlurFilter(1, 0.9, 0.6)]
+        AnimationsGameArea(gameAreaResults)
 
-            gsap.to(gameAreaResults[i].symbols[0], {
-                duration: 0.2,
-                ease: "none",
-                y: 200, //move each box 500px to right
-                modifiers: {
-                    y: gsap.utils.unitize(y => parseFloat(y) % 250) //force x value to be between 0 and 500 using modulus
-                },
-                repeat: -1
-            });
-            gsap.to(gameAreaResults[i].symbols[1], {
-                duration: 0.2,
-                ease: "none",
-                y: -75, //move each box 500px to right
-                modifiers: {
-                    y: gsap.utils.unitize(y => parseFloat(y) % 200) //force x value to be between 0 and 500 using modulus
-                },
-                repeat: -1
-            });
-            gsap.to(gameAreaResults[i].symbols[2], {
-                duration: 0.2,
-                ease: "none",
-                y: -100, //move each box 500px to right
-                modifiers: {
-                    y: gsap.utils.unitize(y => parseFloat(y) % 300) //force x value to be between 0 and 500 using modulus
-                },
-                repeat: -1
-            });
-        }
         soundClick.play();
         soundsPlay.play();
         soundsFon.play();
@@ -351,16 +238,22 @@ function play() {
         if (timePlay == 0) {
             targetClick = false;
             buttonPlay.texture = buttonPlayTexture[0];
-            gameAreaResults = [];
-            gameScene.removeChild(gameAreaContainer);
-            gameAreaContainer = createRandomGameArea();
+            gameScene.removeChild(gameAreaObj.gameAreaContainer);
+
+            gameAreaObj = createRandomGameArea(gameItemsArr)
+            gameAreaResults = gameAreaObj.gameAreaResults
+            let { gameAreaContainer, gameCombo } = gameAreaObj
+            gameAreaContainer.width = app.screen.width / 2;
+            gameAreaContainer.y = app.screen.height / 2 + 50;
+            gameAreaContainer.x = app.screen.width / 2 + 50;
+            gameAreaContainer.pivot.set(gameAreaContainer.width / 2, gameAreaContainer.height / 2);
             gameScene.addChild(gameAreaContainer);
             roundResult = checkPlayResult(gameCombo);
             soundsPlay.pause();
             soundsPlay.currentTime = 0;
-            console.log(gameAreaResults)
+
             if (roundResult.win) {
-                roundResult.resultLineItem.forEach(item => item.itemSymbol.children[0].visible = true)
+                roundResult.resultLineItem.forEach(item => item.itemSymbol.children[0].filters = [filterGlow])
                 eventViewGameWin();
                 credits += WIN_PRIZE;
                 winSalary += WIN_PRIZE;
@@ -373,7 +266,7 @@ function play() {
             }
             if (roundResult.loss) {
                 eventViewGameOver();
-                roundResult.resultLineItem.forEach(item => item.itemSymbol.children[0].visible = true)
+                roundResult.resultLineItem.forEach(item => item.itemSymbol.children[0].filters = [filterGlow])
                 credits = 0
                 creditsPanels.children[1].text = `MONEY: ${credits}$`;
                 creditsPanels.children[2].text = `WIN: ${winSalary}$`;
@@ -385,7 +278,6 @@ function play() {
 
     if (targetWin) {
         timeWinView -= 1;
-        console.log(timeWinView)
         if (timeWinView == 0) {
             targetWin = false;
             winScene.visible = false;

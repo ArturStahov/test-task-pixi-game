@@ -17,7 +17,6 @@ export const checkPlayResult = (gameCombo) => {
 
 
             if (resultCheckArbitrary.length === 3 && checkSymbol.itemId === wildSymbolId) {
-                console.log('You Loss')
                 loss = true;
                 resultLineItem = [...gameCombo.a]
                 return
@@ -44,7 +43,6 @@ export const checkPlayResult = (gameCombo) => {
             let checkSymbol = gameCombo.b[i];
             let resultCheckArbitrary = gameCombo.b.filter(item => item.itemId === checkSymbol.itemId)
             if (resultCheckArbitrary.length === 3 && checkSymbol.itemId === wildSymbolId) {
-                console.log('You Loss')
                 loss = true;
                 resultLineItem = [...gameCombo.b]
                 return
@@ -71,7 +69,6 @@ export const checkPlayResult = (gameCombo) => {
             let checkSymbol = gameCombo.c[i];
             let resultCheckArbitrary = gameCombo.c.filter(item => item.itemId === checkSymbol.itemId)
             if (resultCheckArbitrary.length === 3 && checkSymbol.itemId === wildSymbolId) {
-                console.log('You Loss')
                 loss = true;
                 resultLineItem = [...gameCombo.c]
                 return

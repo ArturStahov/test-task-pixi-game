@@ -20,6 +20,5 @@ export const loadingSceneInit = () => {
     loadingScene.addChild(SpinnerLoading)
 
     return loadingScene;
-
 }
 

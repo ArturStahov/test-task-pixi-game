@@ -26,6 +26,13 @@ module.exports = env => ({
         test: /\.css$/,
         use: [MiniCssExtractPlugin.loader, 'css-loader', 'postcss-loader'],
       },
+      {
+        test: /\.mp3$/,
+        loader: 'file-loader',
+        query: {
+          name: 'static/media/[name].[hash:8].[ext]'
+        }
+      }
     ],
   },
   plugins: [
