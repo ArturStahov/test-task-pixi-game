@@ -18,7 +18,7 @@ export const createRandomGameArea = (gameItemsArr) => {
 
     for (let i = 0; i < 3; i += 1) {
         const rowContainer = new PIXI.Container();
-        rowContainer.x = i * ROW_WIDTH;
+        rowContainer.x = i * ROW_WIDTH * 1.9;
         gameAreaContainer.addChild(rowContainer);
         const row = {
             symbols: [],

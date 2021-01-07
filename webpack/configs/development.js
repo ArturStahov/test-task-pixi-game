@@ -22,7 +22,15 @@ module.exports = env => ({
         query: {
           name: 'static/media/[name].[hash:8].[ext]'
         }
-      }
+      },
+      {
+        test: /\.json$/,
+        loader: 'file-loader',
+        type: 'javascript/auto',
+        query: {
+          name: 'assets/[name].[ext]'
+        }
+      },
 
     ],
   },
