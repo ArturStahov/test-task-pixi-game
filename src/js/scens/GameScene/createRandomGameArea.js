@@ -1,15 +1,21 @@
 import * as PIXI from 'pixi.js'
-import app from '../../app'
-import { generateRandomInt } from './generateRandomInt'
+import { generateRandomInt } from '../../logics/generateRandomInt'
 
 
+//width row
 const ROW_WIDTH = 200;
+//symbol size
 const SYMBOL_SIZE = 150;
 
-
+/**
+ * function create game area  
+ * @param {Array} gameItemsArr it's array all game items
+ * @returns object with gameAreaContainer: pixi container with game row reels for view, 
+ * gameCombo: object with results create game area conversion in column(array with symbols) for check results
+ */
 export const createRandomGameArea = (gameItemsArr) => {
     const gameAreaContainer = new PIXI.Container();
-    let gameAreaResults = [];
+
     let gameCombo = {
         a: [],
         b: [],
@@ -20,9 +26,6 @@ export const createRandomGameArea = (gameItemsArr) => {
         const rowContainer = new PIXI.Container();
         rowContainer.x = i * ROW_WIDTH * 1.9;
         gameAreaContainer.addChild(rowContainer);
-        const row = {
-            symbols: [],
-        };
 
         for (let j = 0; j < 3; j += 1) {
             let randomItemId = generateRandomInt(0, gameItemsArr.length - 1);
@@ -40,7 +43,7 @@ export const createRandomGameArea = (gameItemsArr) => {
                 itemId: randomItemId,
                 itemSymbol: symbolContainer
             }
-            row.symbols.push(symbolContainer);
+
             rowContainer.addChild(symbolContainer);
             switch (j) {
                 case 0:
@@ -57,8 +60,8 @@ export const createRandomGameArea = (gameItemsArr) => {
             }
 
         }
-        gameAreaResults.push(row);
+
     }
-    return { gameAreaContainer, gameAreaResults, gameCombo };
+    return { gameAreaContainer, gameCombo };
 }
 

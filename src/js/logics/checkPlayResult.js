@@ -1,10 +1,17 @@
-
+/**
+ * 
+ * @param {object} gameCombo it result for create game area with line (array) items
+ * @return {object} object with params result checking gameCombo.  
+ *      win:bool,
+        loss:bool,
+        resultLineItem:array with win items,
+ */
 export const checkPlayResult = (gameCombo) => {
     let win = false
     let loss = false
     let resultLineItem = [];
     const wildSymbolId = 0;
-
+    //checking first game line(column)
     const checkALine = () => {
         if (win) {
             return
@@ -12,9 +19,7 @@ export const checkPlayResult = (gameCombo) => {
         let resultCheckWild = gameCombo.a.some(item => item.itemId === wildSymbolId)
         for (let i = 0; i < 3; i += 1) {
             let checkSymbol = gameCombo.a[i];
-
             let resultCheckArbitrary = gameCombo.a.filter(item => item.itemId === checkSymbol.itemId)
-
 
             if (resultCheckArbitrary.length === 3 && checkSymbol.itemId === wildSymbolId) {
                 loss = true;
@@ -33,7 +38,7 @@ export const checkPlayResult = (gameCombo) => {
             }
         }
     }
-
+    //checking second game line(column)
     const checkBLine = () => {
         if (win) {
             return
@@ -59,7 +64,7 @@ export const checkPlayResult = (gameCombo) => {
             }
         }
     }
-
+    //checking third game line(column)
     const checkCLine = () => {
         if (win) {
             return

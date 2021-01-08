@@ -1,6 +1,7 @@
 import * as PIXI from 'pixi.js'
 import app from '../../../app'
 
+//init panel user credits coins
 export const creditsPanel = (credits, winSalary) => {
     const panelContainer = new PIXI.Container()
     const Box = new PIXI.Graphics();

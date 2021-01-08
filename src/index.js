@@ -27,8 +27,9 @@ import { creditsPanel } from './js/scens/GameScene'
 import { AnimationsGameArea } from './js/scens/GameScene'
 import { gameOverSceneInit } from './js/scens/GameOverScene'
 import { checkPlayResult } from './js/logics/checkPlayResult'
-import { createRandomGameArea } from './js/logics/createRandomGameArea'
+import { createRandomGameArea } from './js/scens/GameScene'
 import { buttonNewGameInit } from './js/scens/GameOverScene'
+import { areaForAnimation } from './js/scens/GameScene'
 
 document.body.appendChild(app.view);
 
@@ -60,6 +61,7 @@ let gameScene;
 let loadingScene;
 let winScene;
 let gameOverScene;
+let AnimationContainer;
 
 let buttonPlay;
 let buttonPlayTexture;
@@ -74,7 +76,7 @@ let isLoadingGame = true;
 let targetClick = false;
 let targetWin = false;
 let gameItemsArr = [];
-let gameAreaResults = [];
+let gameAreaAnimationItemRefs = [];
 let roundResult = null;
 
 
@@ -130,15 +132,28 @@ function setup() {
     app.stage.addChild(gameOverScene);
 
     //init  game area
+    //create random area
     gameAreaObj = createRandomGameArea(gameItemsArr)
-    gameAreaResults = gameAreaObj.gameAreaResults
     const { gameAreaContainer } = gameAreaObj
     gameAreaContainer.y = app.screen.height / 2;
     gameAreaContainer.x = app.screen.width / 2 - 100;
     gameAreaContainer.pivot.set(gameAreaContainer.width / 2, gameAreaContainer.height / 2);
     gameScene.addChild(gameAreaContainer);
+    // create animation area
+    const gameAreaForAnimation = areaForAnimation(gameItemsArr)
+    let { gameAreaAnimationContainer, itemsAnimationRef } = gameAreaForAnimation
+    gameAreaAnimationItemRefs = itemsAnimationRef
+    AnimationContainer = gameAreaAnimationContainer;
+    AnimationContainer.y = (app.screen.height / 2) + 200;
+    AnimationContainer.x = app.screen.width / 2 - 100;
+    AnimationContainer.pivot.set(gameAreaAnimationContainer.width / 2, gameAreaAnimationContainer.height / 2);
+    //create animation
+    AnimationsGameArea(gameAreaAnimationItemRefs)
+    gameScene.addChild(AnimationContainer);
 
     //view game scene property
+    gameAreaContainer.visible = true
+    AnimationContainer.visible = false;
     loadingScene.visible = true;
     gameScene.visible = false;
     winScene.visible = false;
@@ -147,6 +162,7 @@ function setup() {
     state = play;
     app.ticker.add(delta => gameLoop(delta));
 }
+
 
 //NextPlay button Win Scene handler
 const handlerClickNextPlay = () => {
@@ -173,11 +189,17 @@ const handlerClickPlay = () => {
         credits -= SPINS_PRICE;
         creditsPanels.children[1].text = `MONEY: ${credits}$`;
 
-        if (roundResult && roundResult.resultLineItem.length > 0) {
-            roundResult.resultLineItem.forEach(item => item.itemSymbol.children[0].filters = null)
-        }
+        gameScene.removeChild(gameAreaObj.gameAreaContainer);
+        gameAreaObj = createRandomGameArea(gameItemsArr)
+        const { gameAreaContainer } = gameAreaObj
+        gameAreaContainer.y = app.screen.height / 2;
+        gameAreaContainer.x = (app.screen.width / 2) - 100;
+        gameAreaContainer.pivot.set(gameAreaContainer.width / 2, gameAreaContainer.height / 2);
+        gameScene.addChild(gameAreaContainer);
 
-        AnimationsGameArea(gameAreaResults)
+        gameAreaContainer.visible = false;
+        AnimationContainer.visible = true;
+
         soundClick.play();
         soundsPlay.play();
         soundsFon.play();
@@ -200,6 +222,7 @@ const eventPreloadingGame = () => {
         return;
     }
 }
+
 //Game Over event
 const eventViewGameOver = () => {
     gameOverScene.visible = true;
@@ -223,15 +246,9 @@ function play() {
         if (timePlay == 0) {
             targetClick = false;
             buttonPlay.texture = buttonPlayTexture[0];
-            gameScene.removeChild(gameAreaObj.gameAreaContainer);
-
-            gameAreaObj = createRandomGameArea(gameItemsArr)
-            gameAreaResults = gameAreaObj.gameAreaResults
+            AnimationContainer.visible = false;
             const { gameAreaContainer, gameCombo } = gameAreaObj
-            gameAreaContainer.y = app.screen.height / 2;
-            gameAreaContainer.x = app.screen.width / 2 - 100;
-            gameAreaContainer.pivot.set(gameAreaContainer.width / 2, gameAreaContainer.height / 2);
-            gameScene.addChild(gameAreaContainer);
+            gameAreaContainer.visible = true;
             roundResult = checkPlayResult(gameCombo);
             soundsPlay.pause();
             soundsPlay.currentTime = 0;
@@ -256,10 +273,9 @@ function play() {
                 creditsPanels.children[2].text = `WIN: ${winSalary}$`;
                 return
             }
-
         }
     }
-
+//start event win timer
     if (targetWin) {
         timeWinView -= 1;
         if (timeWinView == 0) {
