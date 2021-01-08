@@ -18,18 +18,18 @@ import soundsWin from './assets/sound/won.mp3'
 import soundsClick from './assets/sound/click.mp3'
 import soundFon from './assets/sound/Sound_fon.mp3'
 import app from './app'
-import { loadingSceneInit } from './js/scens/LoadingScene'
-import { winSceneInit } from './js/scens/WinScene'
-import { buttonNextPlayInit } from './js/scens/WinScene'
-import { gameSceneInit } from './js/scens/GameScene'
-import { buttonPlayInit } from './js/scens/GameScene'
-import { creditsPanel } from './js/scens/GameScene'
-import { AnimationsGameArea } from './js/scens/GameScene'
-import { gameOverSceneInit } from './js/scens/GameOverScene'
+import { loadingSceneInit } from './js/scenes/LoadingScene'
+import { winSceneInit } from './js/scenes/WinScene'
+import { buttonNextPlayInit } from './js/scenes/WinScene'
+import { gameSceneInit } from './js/scenes/GameScene'
+import { buttonPlayInit } from './js/scenes/GameScene'
+import { creditsPanel } from './js/scenes/GameScene'
+import { AnimationsGameArea } from './js/scenes/GameScene'
+import { gameOverSceneInit } from './js/scenes/GameOverScene'
 import { checkPlayResult } from './js/logics/checkPlayResult'
-import { createRandomGameArea } from './js/scens/GameScene'
-import { buttonNewGameInit } from './js/scens/GameOverScene'
-import { areaForAnimation } from './js/scens/GameScene'
+import { createRandomGameArea } from './js/scenes/GameScene'
+import { buttonNewGameInit } from './js/scenes/GameOverScene'
+import { areaForAnimation } from './js/scenes/GameScene'
 
 document.body.appendChild(app.view);
 
@@ -275,7 +275,7 @@ function play() {
             }
         }
     }
-//start event win timer
+    //start event win timer
     if (targetWin) {
         timeWinView -= 1;
         if (timeWinView == 0) {
