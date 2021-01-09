@@ -1,14 +1,14 @@
-import * as PIXI from 'pixi.js'
-import app from '../../../app'
+import * as PIXI from 'pixi.js';
+import app from '../../../app';
 
 //interactive display button fullscreen
 export const buttonNewGameInit = () => {
-    const buttonNewGame = new PIXI.Graphics();
-    buttonNewGame.beginFill(0x061639, 0.1);
-    buttonNewGame.drawRect(app.screen.width / 2, app.screen.height / 2, app.screen.width, app.screen.height);
-    buttonNewGame.pivot.set(buttonNewGame.width / 2, buttonNewGame.height / 2)
-    buttonNewGame.endFill();
-    buttonNewGame.interactive = true;
-    buttonNewGame.buttonMode = true;
-    return buttonNewGame
+    const buttonFigure = new PIXI.Graphics();
+    buttonFigure.beginFill(0x061639, 0.1);
+    buttonFigure.drawRect(app.screen.width / 2, app.screen.height / 2, app.screen.width, app.screen.height);
+    buttonFigure.pivot.set(buttonFigure.width / 2, buttonFigure.height / 2);
+    buttonFigure.endFill();
+    buttonFigure.interactive = true;
+    buttonFigure.buttonMode = true;
+    return buttonFigure;
 }

@@ -1,2 +1,2 @@
-export { winSceneInit } from './winScene'
-export { buttonNextPlayInit } from './buttonNextPlay'
+export { winSceneInit } from './winScene';
+export { buttonNextPlayInit } from './buttonNextPlay';

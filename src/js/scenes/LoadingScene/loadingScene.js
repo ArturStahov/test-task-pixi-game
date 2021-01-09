@@ -1,8 +1,8 @@
-import * as PIXI from 'pixi.js'
-import app from '../../../app'
+import * as PIXI from 'pixi.js';
+import app from '../../../app';
 //loading Scene initialize
 export const loadingSceneInit = () => {
-    const loadingScene = new PIXI.Container()
+    const loadingSceneContainer = new PIXI.Container();
     const SpinnerLoading = new PIXI.Text("...Loading!", {
         fontFamily: "Arial",
         fontSize: 24,
@@ -17,8 +17,8 @@ export const loadingSceneInit = () => {
     });
     SpinnerLoading.anchor.set(0.5);
     SpinnerLoading.position.set(app.screen.width / 2, app.screen.height / 2);
-    loadingScene.addChild(SpinnerLoading)
+    loadingSceneContainer.addChild(SpinnerLoading);
 
-    return loadingScene;
+    return loadingSceneContainer;
 }
 

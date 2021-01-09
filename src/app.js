@@ -3,7 +3,7 @@ import * as PIXI from 'pixi.js'
 function registerPixiInspector() {
     window.__PIXI_INSPECTOR_GLOBAL_HOOK__ && window.__PIXI_INSPECTOR_GLOBAL_HOOK__.register({ PIXI: PIXI });
 }
-registerPixiInspector()
+registerPixiInspector();
 const app = new PIXI.Application({
     transparent: false,
     resolution: window.devicePixelRatio,
@@ -13,7 +13,9 @@ const app = new PIXI.Application({
 app.renderer.backgroundColor = 0x000000;
 app.renderer.view.style.position = "absolute";
 app.renderer.view.style.display = "block";
+app.renderer.autoResize = true;
 app.renderer.resize(window.innerWidth, window.innerHeight);
+
 app.view.style.width = window.innerWidth + "px";
 app.view.style.height = window.innerHeight + "px";
 

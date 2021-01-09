@@ -2,7 +2,7 @@ import * as PIXI from 'pixi.js'
 import app from '../../../app'
 
 export const gameOverSceneInit = () => {
-    const gameOverScene = new PIXI.Container()
+    const gameOverSceneContainer = new PIXI.Container()
 
     //background panel
     const Box = new PIXI.Graphics();
@@ -11,7 +11,7 @@ export const gameOverSceneInit = () => {
     Box.drawRoundedRect(app.screen.width / 2, app.screen.height / 2, app.screen.width - app.screen.width / 3, app.screen.height - app.screen.height / 3, 16);
     Box.pivot.set(Box.width / 2, Box.height / 2)
     Box.endFill();
-    gameOverScene.addChild(Box)
+    gameOverSceneContainer.addChild(Box)
 
     //text info You Lost
     const losText = new PIXI.Text("YOU LOST!", {
@@ -28,7 +28,7 @@ export const gameOverSceneInit = () => {
     });
     losText.anchor.set(0.5);
     losText.position.set(app.screen.width / 2, app.screen.height / 2);
-    gameOverScene.addChild(losText)
+    gameOverSceneContainer.addChild(losText)
 
-    return gameOverScene
+    return gameOverSceneContainer
 }

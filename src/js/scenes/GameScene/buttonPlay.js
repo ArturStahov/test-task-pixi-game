@@ -1,5 +1,5 @@
-import * as PIXI from 'pixi.js'
-import app from '../../../app'
+import * as PIXI from 'pixi.js';
+import app from '../../../app';
 
 //Game Scene Control initialize
 export const buttonPlayInit = (buttonPlayTexture) => {
@@ -8,5 +8,5 @@ export const buttonPlayInit = (buttonPlayTexture) => {
     buttonPlay.anchor.set(0.5);
     buttonPlay.interactive = true;
     buttonPlay.buttonMode = true;
-    return buttonPlay
+    return buttonPlay;
 }

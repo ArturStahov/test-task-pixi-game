@@ -1,16 +1,16 @@
-import * as PIXI from 'pixi.js'
-import app from '../../../app'
+import * as PIXI from 'pixi.js';
+
 
 //init panel user credits coins
-export const creditsPanel = (credits, winSalary) => {
-    const panelContainer = new PIXI.Container()
+export const creditsPanelInit = (credits, winSalary) => {
+    const creditsPanelContainer = new PIXI.Container();
     const Box = new PIXI.Graphics();
     Box.lineStyle(2, 0xBF6730, 1);
     Box.beginFill(0x061639, 1);
     Box.drawRoundedRect(0, 0, 200, 150);
-    Box.pivot.set(Box.width / 2, Box.height / 2)
+    Box.pivot.set(Box.width / 2, Box.height / 2);
     Box.endFill();
-    panelContainer.addChild(Box)
+    creditsPanelContainer.addChild(Box);
 
     let creditsText = new PIXI.Text(`MONEY: ${credits}$`, {
         fontFamily: "Arial",
@@ -24,7 +24,7 @@ export const creditsPanel = (credits, winSalary) => {
     });
     creditsText.anchor.set(0.5);
     creditsText.position.set(-20, -30);
-    panelContainer.addChild(creditsText)
+    creditsPanelContainer.addChild(creditsText);
 
     let winSalaryText = new PIXI.Text(`WIN: ${winSalary}$`, {
         fontFamily: "Arial",
@@ -38,7 +38,7 @@ export const creditsPanel = (credits, winSalary) => {
     });
     winSalaryText.anchor.set(0.5);
     winSalaryText.position.set(-47, -5);
-    panelContainer.addChild(winSalaryText)
+    creditsPanelContainer.addChild(winSalaryText);
 
-    return panelContainer
+    return { creditsPanelContainer, winSalaryText, creditsText };
 }

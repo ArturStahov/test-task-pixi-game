@@ -1,1 +1,1 @@
-export { loadingSceneInit } from './loadingScene'
+export { loadingSceneInit } from './loadingScene';
