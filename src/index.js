@@ -1,16 +1,6 @@
 import * as PIXI from 'pixi.js';
 import { GlowFilter } from 'pixi-filters';
-import '@csstools/normalize.css';
 import './base.css';
-import './assets/SYM1.png';
-import './assets/SYM2.png';
-import './assets/SYM3.png';
-import './assets/SYM4.png';
-import './assets/SYM5.png';
-import './assets/SYM6.png';
-import './assets/BG.png';
-import './assets/BTN_Spin.png';
-import './assets/BTN_Spin_d.png';
 import './assets/assets.json';
 import './assets/assets.png';
 import soundPlay from './assets/sound/runPlay.mp3';
@@ -73,13 +63,12 @@ let timeWinView;
 let gameAreaObj;
 let credits;
 let winSalary = 0;
-let timeLoadingGame = 50;
+let timeLoadingGame = 100;
 let isLoadingGame = true;
 let targetClick = false;
 let targetWin = false;
-let gameItemsArr = [];
-let gameAreaAnimationItemRefs = [];
-let roundResult = null;
+let gameItemsArr = null;
+
 
 
 function setup() {
@@ -145,16 +134,17 @@ function setup() {
     gameAreaContainer.x = app.screen.width / 2 - 100;
     gameAreaContainer.pivot.set(gameAreaContainer.width / 2, gameAreaContainer.height / 2);
     gameScene.addChild(gameAreaContainer);
+
     // create animation area
     const gameAreaForAnimation = areaForAnimation(gameItemsArr);
-    let { gameAreaAnimationContainer, itemsAnimationRef } = gameAreaForAnimation;
-    gameAreaAnimationItemRefs = itemsAnimationRef;
+    const { gameAreaAnimationContainer, arrayItemsForAnim } = gameAreaForAnimation;
     animationReelsContainer = gameAreaAnimationContainer;
-    animationReelsContainer.y = app.screen.height;
+    animationReelsContainer.y = app.screen.height - 100;
     animationReelsContainer.x = (app.screen.width / 2) - 100;
     animationReelsContainer.pivot.set(animationReelsContainer.width / 2, animationReelsContainer.height / 2);
+
     //create animation
-    animationsReels(gameAreaAnimationItemRefs);
+    animationsReels(arrayItemsForAnim);
     gameScene.addChild(animationReelsContainer);
 
     //view game scene property
@@ -171,14 +161,14 @@ function setup() {
 
 
 //NextPlay button Win Scene handler
-const handlerClickNextPlay = () => {
+function handlerClickNextPlay() {
     targetWin = false;
     winScene.visible = false;
     timeWinView = INITIAL_TIME_WIN;
 }
 
 //New Game button handler
-const handlerClickNewGame = () => {
+function handlerClickNewGame() {
     gameOverScene.visible = false;
     credits = INITIAL_CREDITS;
     winSalary = 0;
@@ -188,7 +178,7 @@ const handlerClickNewGame = () => {
 }
 
 //game event preloading event
-const eventPreloadingGame = () => {
+function eventPreloadingGame() {
     if (isLoadingGame) {
         timeLoadingGame -= 1;
     } else {
@@ -204,17 +194,17 @@ const eventPreloadingGame = () => {
 }
 
 //Game Over event
-const eventViewGameOver = () => {
+function eventViewGameOver() {
     gameOverScene.visible = true;
 }
 
 //Game Win event
-const eventViewGameWin = () => {
+function eventViewGameWin() {
     winScene.visible = true;
 }
 
 //button Play handler
-const handlerClickPlay = () => {
+function handlerClickPlay() {
     if (!targetClick) {
         if (!credits) {
             eventViewGameOver();
@@ -258,6 +248,13 @@ function gameLoop(delta) {
 function play() {
     eventPreloadingGame();
 
+    groupSpinEvents();
+
+    winAutoHidden();
+}
+
+//start spin timer and run game events
+function groupSpinEvents() {
     if (targetClick) {
         timePlay -= 1;
 
@@ -267,14 +264,15 @@ function play() {
             animationReelsContainer.visible = false;
             const { gameAreaContainer, gameCombo } = gameAreaObj
             gameAreaContainer.visible = true;
-            roundResult = checkPlayResult(gameCombo);
+            const spinResult = checkPlayResult(gameCombo);
+            const { win, loss, resultLineItem } = spinResult;
             soundsPlay.pause();
             soundsPlay.currentTime = 0;
 
             let { winSalaryText, creditsText } = creditsPanel;
 
-            if (roundResult.win) {
-                roundResult.resultLineItem.forEach(item => item.itemSymbol.children[0].filters = [filterGlow])
+            if (win) {
+                resultLineItem.forEach(item => item.itemSymbol.children[0].filters = [filterGlow]);
                 eventViewGameWin();
                 credits += WIN_PRIZE;
                 winSalary += WIN_PRIZE;
@@ -285,16 +283,19 @@ function play() {
                 soundWin.play();
                 return;
             }
-            if (roundResult.loss) {
+            if (loss) {
                 eventViewGameOver();
-                roundResult.resultLineItem.forEach(item => item.itemSymbol.children[0].filters = [filterGlow]);
+                resultLineItem.forEach(item => item.itemSymbol.children[0].filters = [filterGlow]);
                 credits = 0;
                 creditsText.text = `MONEY: ${credits}$`;
                 return;
             }
         }
     }
-    //start event win timer
+}
+
+//start  win timer and auto hidden win scenes 
+function winAutoHidden() {
     if (targetWin) {
         timeWinView -= 1;
         if (timeWinView == 0) {
@@ -304,4 +305,3 @@ function play() {
         }
     }
 }
-

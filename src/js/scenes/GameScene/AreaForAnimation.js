@@ -10,12 +10,12 @@ const SYMBOL_SIZE = 200;
 /**
  * function create game area for animation
  * @param {Array} gameItemsArr it's array all game items
- * @returns object with gameAreaAnimationContainer: pixi container, itemsAnimationRef: array with results create game area(row with symbols)
+ * @returns object with gameAreaAnimationContainer: pixi container, arrayItemsForAnim: array with results create game area(row with symbols)
  */
 
 export const areaForAnimation = (gameItemsArr) => {
     const gameAreaAnimationContainer = new PIXI.Container();
-    let itemsAnimationRef = [];
+    let arrayItemsForAnim = [];
 
     for (let i = 0; i < 3; i += 1) {
         const rowContainer = new PIXI.Container();
@@ -40,8 +40,8 @@ export const areaForAnimation = (gameItemsArr) => {
             rowContainer.addChild(symbolContainer);
 
         }
-        itemsAnimationRef.push(row);
+        arrayItemsForAnim.push(row);
     }
-    return { gameAreaAnimationContainer, itemsAnimationRef };
+    return { gameAreaAnimationContainer, arrayItemsForAnim };
 }
 

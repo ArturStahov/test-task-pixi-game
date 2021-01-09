@@ -7,16 +7,16 @@ const filterBlur = new PIXI.filters.BlurFilter(0.8, 0.9, 0.6);
 
 /**
  * function create animation and play her
- * @param {Array} gameAreaAnimationItemRefs it's array with objects game rows with symbols for animation
+ * @param {Array} arrayItemsForAnim it's array with objects game rows with symbols for animation
  */
 
-export const animationsReels = (gameAreaAnimationItemRefs) => {
+export const animationsReels = (arrayItemsForAnim) => {
     for (let i = 0; i < 3; i += 1) {
-        gameAreaAnimationItemRefs[i].symbols[0].filters = [filterBlur];
-        gameAreaAnimationItemRefs[i].symbols[2].filters = [filterBlur];
-        gameAreaAnimationItemRefs[i].symbols[5].filters = [filterBlur];
+        arrayItemsForAnim[i].symbols[0].filters = [filterBlur];
+        arrayItemsForAnim[i].symbols[2].filters = [filterBlur];
+        arrayItemsForAnim[i].symbols[5].filters = [filterBlur];
 
-        gsap.to(gameAreaAnimationItemRefs[i].symbols[0], {
+        gsap.to(arrayItemsForAnim[i].symbols[0], {
             duration: 0.3,
             ease: "none",
             y: 270,
@@ -25,7 +25,7 @@ export const animationsReels = (gameAreaAnimationItemRefs) => {
             },
             repeat: -1,
         });
-        gsap.to(gameAreaAnimationItemRefs[i].symbols[1], {
+        gsap.to(arrayItemsForAnim[i].symbols[1], {
             duration: 0.3,
             ease: "none",
             y: -125,
@@ -34,7 +34,7 @@ export const animationsReels = (gameAreaAnimationItemRefs) => {
             },
             repeat: -1,
         });
-        gsap.to(gameAreaAnimationItemRefs[i].symbols[2], {
+        gsap.to(arrayItemsForAnim[i].symbols[2], {
             duration: 0.3,
             ease: "none",
             y: -125,
@@ -43,7 +43,7 @@ export const animationsReels = (gameAreaAnimationItemRefs) => {
             },
             repeat: -1,
         });
-        gsap.to(gameAreaAnimationItemRefs[i].symbols[3], {
+        gsap.to(arrayItemsForAnim[i].symbols[3], {
             duration: 0.3,
             ease: "none",
             y: -125,
@@ -52,7 +52,7 @@ export const animationsReels = (gameAreaAnimationItemRefs) => {
             },
             repeat: -1,
         });
-        gsap.to(gameAreaAnimationItemRefs[i].symbols[4], {
+        gsap.to(arrayItemsForAnim[i].symbols[4], {
             duration: 0.3,
             ease: "none",
             y: -125,
@@ -61,7 +61,7 @@ export const animationsReels = (gameAreaAnimationItemRefs) => {
             },
             repeat: -1,
         });
-        gsap.to(gameAreaAnimationItemRefs[i].symbols[5], {
+        gsap.to(arrayItemsForAnim[i].symbols[5], {
             duration: 0.3,
             ease: "none",
             y: 125,
