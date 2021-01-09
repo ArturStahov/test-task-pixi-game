@@ -6,7 +6,7 @@ import './assets/assets.png';
 import soundPlay from './assets/sound/runPlay.mp3';
 import soundsWin from './assets/sound/won.mp3';
 import soundsClick from './assets/sound/click.mp3';
-import soundFon from './assets/sound/Sound_fon.mp3';
+import soundBg from './assets/sound/Sound_fon.mp3';
 import app from './app';
 import { loadingSceneInit } from './js/scenes/LoadingScene';
 import { winSceneInit } from './js/scenes/WinScene';
@@ -37,7 +37,7 @@ loaders
 let soundWin = new Audio(soundsWin);
 let soundClick = new Audio(soundsClick);
 let soundsPlay = new Audio(soundPlay);
-let soundsFon = new Audio(soundFon);
+let soundsBg = new Audio(soundBg);
 
 //game settings 
 const INITIAL_CREDITS = 1000;
@@ -235,8 +235,8 @@ function handlerClickPlay() {
 
         soundClick.play();
         soundsPlay.play();
-        soundsFon.play();
-        soundsFon.loop = true;
+        soundsBg.play();
+        soundsBg.loop = true;
     }
 }
 
