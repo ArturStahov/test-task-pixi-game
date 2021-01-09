@@ -24,7 +24,7 @@ import { buttonNextPlayInit } from './js/scenes/WinScene';
 import { gameSceneInit } from './js/scenes/GameScene';
 import { buttonPlayInit } from './js/scenes/GameScene';
 import { creditsPanelInit } from './js/scenes/GameScene';
-import { AnimationsGameArea } from './js/scenes/GameScene';
+import { animationsReels } from './js/scenes/GameScene';
 import { gameOverSceneInit } from './js/scenes/GameOverScene';
 import { checkPlayResult } from './js/logics/checkPlayResult';
 import { createRandomGameArea } from './js/scenes/GameScene';
@@ -63,7 +63,7 @@ let gameScene;
 let loadingScene;
 let winScene;
 let gameOverScene;
-let AnimationReelsContainer;
+let animationReelsContainer;
 
 let buttonPlay;
 let buttonPlayTexture;
@@ -149,17 +149,17 @@ function setup() {
     const gameAreaForAnimation = areaForAnimation(gameItemsArr);
     let { gameAreaAnimationContainer, itemsAnimationRef } = gameAreaForAnimation;
     gameAreaAnimationItemRefs = itemsAnimationRef;
-    AnimationReelsContainer = gameAreaAnimationContainer;
-    AnimationReelsContainer.y = app.screen.height;
-    AnimationReelsContainer.x = (app.screen.width / 2) - 100;
-    AnimationReelsContainer.pivot.set(AnimationReelsContainer.width / 2, AnimationReelsContainer.height / 2);
+    animationReelsContainer = gameAreaAnimationContainer;
+    animationReelsContainer.y = app.screen.height;
+    animationReelsContainer.x = (app.screen.width / 2) - 100;
+    animationReelsContainer.pivot.set(animationReelsContainer.width / 2, animationReelsContainer.height / 2);
     //create animation
-    AnimationsGameArea(gameAreaAnimationItemRefs);
-    gameScene.addChild(AnimationReelsContainer);
+    animationsReels(gameAreaAnimationItemRefs);
+    gameScene.addChild(animationReelsContainer);
 
     //view game scene property
     gameAreaContainer.visible = true;
-    AnimationReelsContainer.visible = false;
+    animationReelsContainer.visible = false;
     loadingScene.visible = true;
     gameScene.visible = false;
     winScene.visible = false;
@@ -241,7 +241,7 @@ const handlerClickPlay = () => {
         gameScene.addChild(gameAreaContainer);
 
         gameAreaContainer.visible = false;
-        AnimationReelsContainer.visible = true;
+        animationReelsContainer.visible = true;
 
         soundClick.play();
         soundsPlay.play();
@@ -264,7 +264,7 @@ function play() {
         if (timePlay == 0) {
             targetClick = false;
             buttonPlay.texture = buttonPlayTexture[0];
-            AnimationReelsContainer.visible = false;
+            animationReelsContainer.visible = false;
             const { gameAreaContainer, gameCombo } = gameAreaObj
             gameAreaContainer.visible = true;
             roundResult = checkPlayResult(gameCombo);

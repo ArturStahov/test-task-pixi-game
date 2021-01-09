@@ -10,7 +10,7 @@ const filterBlur = new PIXI.filters.BlurFilter(0.8, 0.9, 0.6);
  * @param {Array} gameAreaAnimationItemRefs it's array with objects game rows with symbols for animation
  */
 
-export const AnimationsGameArea = (gameAreaAnimationItemRefs) => {
+export const animationsReels = (gameAreaAnimationItemRefs) => {
     for (let i = 0; i < 3; i += 1) {
         gameAreaAnimationItemRefs[i].symbols[0].filters = [filterBlur];
         gameAreaAnimationItemRefs[i].symbols[2].filters = [filterBlur];
